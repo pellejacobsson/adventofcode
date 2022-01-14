@@ -1,0 +1,10 @@
+L12 L8 L8 L12 R4 L12 R6 L12 L8 L8 R4 L12 L12 R6 L12 R4 L12 R6 L12 L8 L8 R4 L12 L12 R6 L12 L8 L8 R4 L12 L12 R6 L12 R4 L12 R6
+L12 L8 L8               L12 L8 L8                             L12 L8 L8               L12 L8 L8
+          L12 R4 L12 R6                         L12 R4 L12 R6                                                 L12 R4 L12 R6
+                                 R4 L12 L12 R6                          R4 L12 L12 R6           R4 L12 L12 R6
+
+A = L, 12, L, 8, L, 8
+B = L, 12, R, 4, L, 12, R, 6
+C = R, 4, L, 12, L, 12, R, 6
+
+A, B, A, C, B, A, C, A, C, B
