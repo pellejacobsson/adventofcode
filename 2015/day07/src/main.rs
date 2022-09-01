@@ -4,7 +4,13 @@ use std::collections::HashMap;
 
 fn main() {
     let filename = "../07_input.txt";
-    let booklet = read_input(filename);
+    let mut booklet = read_input(filename);
+    let part1 = signal(&mut booklet, "a");
+    println!("Part 1: {part1}");
+    let mut booklet = read_input(filename);
+    booklet.insert(String::from("b"), vec![part1]);
+    let part2 = signal(&mut booklet, "a");
+    println!("Part 2: {part2}");
 }
 
 fn read_input(filename: &str) -> HashMap<String,Vec<String>> {
@@ -26,25 +32,23 @@ fn signal(booklet: &mut HashMap<String, Vec<String>>, wire: &str) -> String {
     if wire.parse::<i32>().is_ok() {
         return String::from(wire);
     } else {
-        let instruction = &booklet[wire];
-        if instruction.len() == 1 {
-            let value = &instruction[0];
+        if booklet[wire].len() == 1 {
             if wire.parse::<i32>().is_ok() {
-                return String::from(value);
+                return String::from(&booklet[wire][0]);
             } else {
-                let res = signal(booklet, value);
-                booklet.insert(String::from(wire), vec![res]);
+                let res = signal(booklet, &String::from(&booklet[wire][0]));
+                booklet.insert(String::from(wire), vec![String::from(&res)]);
                 return res;
             }
-        } else if instruction.len() == 2 {
-            let value = String::from(&instruction[1]);
-            let res = (!value.parse::<u16>().unwrap()).to_string();
-            booklet.insert(String::from(wire), vec![res]);
-            return res;
-        } else if instruction.len() == 3 {
-            let value1 = signal(booklet, &instruction[0]).parse::<u16>().unwrap();
-            let value2 = signal(booklet, &instruction[1]).parse::<u16>().unwrap();
-            let op = &instruction[1];
+        } else if booklet[wire].len() == 2 {
+            let res = signal(booklet, &String::from(&booklet[wire][1])).parse::<u16>().unwrap();
+            let res = !res;
+            booklet.insert(String::from(wire), vec![res.to_string()]);
+            return res.to_string();
+        } else if booklet[wire].len() == 3 {
+            let value1 = signal(booklet, &String::from(&booklet[wire][0])).parse::<u16>().unwrap();
+            let value2 = signal(booklet, &String::from(&booklet[wire][2])).parse::<u16>().unwrap();
+            let op = &String::from(&booklet[wire][1]);
             let mut res: u16 = 0;
             match op.as_str() {
                 "AND" => res = value1 & value2,
