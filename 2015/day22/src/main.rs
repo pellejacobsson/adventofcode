@@ -1,17 +1,9 @@
 
 use std::cmp;
 use std::collections::{HashMap, HashSet};
-use binary_heap_plus::BinaryHeap;
+use std::collections::BinaryHeap;
 
-struct State {
-    cost: i32,
-    order: i32,
-    g: Game
-}
-
-
-
-#[derive(Clone)]
+#[derive(Ord, PartialOrd, PartialEq, Eq, Debug, Clone)]
 struct Game {
     player_points: i32,
     mana: i32,
@@ -214,20 +206,17 @@ fn next_possible_states(g: &Game) -> Vec<(Game, i32)> {
 }
 
 fn run_game(g: &Game) -> Option<i32> {
-    let mut q = BinaryHeap::new_by(|a: (i32, i32, Game), b: (i32, i32, Gam)| b.cmp(a));
+    let mut q = BinaryHeap::new();
     let mut dist = HashMap::new();
     let mut order = 0;
     let mut explored = HashSet::new();
     for (v, cost) in next_possible_states(g) {
         dist.insert(v.state(), cost);
-        q.push((cost, order, v));
+        q.push(cmp::Reverse((cost, order, v)));
         order += 1;
-        println!("{cost}");
     }
     while q.len() > 0 {
-        let (d, _, mut u) = q.pop().unwrap();
-        //println!("{d}");
-        //let u_state = u.state();
+        let cmp::Reverse((d, _, mut u)) = q.pop().unwrap();
         let mut outcome = u.go_turn();
         if outcome == 1 {
             return Some(d);
@@ -249,7 +238,7 @@ fn run_game(g: &Game) -> Option<i32> {
                     } else {
                         dist.insert(v.state(), alt);
                     }
-                    q.push((*dist.get(&v.state()).unwrap(), order, v.clone()));
+                    q.push(cmp::Reverse((*dist.get(&v.state()).unwrap(), order, v.clone())));
                     order += 1;
                     explored.insert(v.state());
                 }
@@ -263,7 +252,7 @@ fn main() {
     let g = Game::new(50, 500, 58, 9, 1);
     let part1 = run_game(&g);
     println!("Part 1: {}", part1.unwrap());
-    //let g = Game::new(50, 500, 58, 9, 2);
-    //let part2 = run_game(&g);
-    //println!("Part 2: {}", part2.unwrap());
+    let g = Game::new(50, 500, 58, 9, 2);
+    let part2 = run_game(&g);
+    println!("Part 2: {}", part2.unwrap());
 }
