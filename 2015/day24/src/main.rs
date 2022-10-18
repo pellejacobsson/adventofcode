@@ -15,7 +15,7 @@ fn main() {
 fn calc_entanglement1(w: Vec<usize>) -> usize {
     let mut e_min: usize = 113;
     e_min = e_min.pow(6);
-    for (i, j, k) in [(6, 6, 16), (6, 8, 14), (6, 10, 12), (8, 8, 12), (8, 10, 10)].iter().copied() {
+    for (i, j, _) in [(6, 6, 16), (6, 8, 14), (6, 10, 12), (8, 8, 12), (8, 10, 10)].iter().copied() {
         for p1 in w.iter().copied().combinations(i) {
             if p1.iter().copied().sum::<usize>() == 516 && p1.iter().product::<usize>() < e_min {
                 let ws: HashSet<usize> = w.iter().copied().collect();
@@ -53,8 +53,7 @@ fn calc_entanglement2(w: Vec<usize>) -> usize {
             }
         }
     }
-    //let s = ss.iter().copied().collect::<Vec<(usize, usize, usize, usize)>>();
-    for (i, j, k, l) in ss.iter().copied() {
+    for (i, j, k, _) in ss.iter().copied() {
         for p1 in w.iter().copied().combinations(i) {
             if p1.iter().copied().sum::<usize>() == 387 && p1.iter().product::<usize>() < e_min {
                 let ws: HashSet<usize> = w.iter().copied().collect();
