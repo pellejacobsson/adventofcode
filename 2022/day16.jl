@@ -36,7 +36,7 @@ end
 
 function calc_dists(valves)
     flow_rate_valves = [k for (k, v) in valves if v.flow_rate > 0]
-    dists = Dict()
+    dists = Dict{String, Dict{String, Int}}()
     for start_valve in ["AA"; flow_rate_valves]
         d = bfs(valves, start_valve)
         dists[start_valve] = Dict(k => v for (k, v) in d if k in flow_rate_valves && k!= start_valve)
@@ -58,12 +58,32 @@ function dfs(dists, valves, time, start, opened_valves)
     comb
 end
 
+function dfs_iterative(dists, valves, time, start)
+    stack = [(time, start, Dict{String, Int}(), valves)]
+    comb = []
+
+    while !isempty(stack)
+        time, start, opened_valves, valves = pop!(stack)
+        if time < 2
+            push!(comb, opened_valves)
+            continue
+        end
+        for adj in valves
+            new_time = time - dists[start][adj] - 1
+            new_ov = merge(opened_valves, Dict(adj => new_time))
+            new_valves = setdiff(valves, Set([adj]))
+            push!(stack, (new_time, adj, new_ov, new_valves))
+        end
+    end
+    comb
+end
+
 function runit(filename)
     valves = read_input(filename)
     dists = calc_dists(valves)
     flow_valves = Set(k for (k, v) in valves if v.flow_rate > 0)
-    comb = dfs(dists, flow_valves, 30, "AA", Dict())
-    @show length(comb)
+    #comb = dfs(dists, flow_valves, 30, "AA", Dict())
+    comb = dfs_iterative(dists, flow_valves, 30, "AA")
     max_pressure = 0
     for visited in comb
         flow_vals = [valves[k].flow_rate * v for (k, v) in visited]
@@ -78,4 +98,32 @@ function runit(filename)
     max_pressure
 end
 
+function runit2(filename)
+    valves = read_input(filename)
+    dists = calc_dists(valves)
+    flow_valves = Set(k for (k, v) in valves if v.flow_rate > 0)
+    comb = dfs_iterative(dists, flow_valves, 26, "AA")
+    comb_sorted = sort(comb, by=x -> sum(valves[k].flow_rate * v for (k, v) in x), rev=true)
+    max_pressure = 0
+    for human in comb_sorted, elephant in comb_sorted
+        human_pressure = sum(valves[k].flow_rate * v for (k, v) in human)
+        elephant_pressue = sum(valves[k].flow_rate * v for (k, v) in elephant)
+        pressure = human_pressure + elephant_pressue
+        if pressure <= max_pressure
+            break
+        end
+        human_set = Set(keys(human))
+        elephant_set = Set(keys(elephant))
+        if length(intersect(human_set, elephant_set)) == 0
+            if pressure > max_pressure
+                max_pressure = pressure
+            end
+        end
+    end
+    max_pressure
+end
+
 runit("16_input.txt")
+
+# Gives wrong answer...
+runit2("16_input.txt")
