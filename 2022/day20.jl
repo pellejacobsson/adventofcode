@@ -12,20 +12,28 @@ function runit(filename; part2=false)
         p = 10
     end
     n = length(code)
-    ix = collect(1:n + 1)
-    for _ = 1:p
+    ix = collect(1:n)
+    for pp = 1:p
         for i = 1:n
             j = findfirst(x -> x == i, ix)
             c = code[j]
-            k = mod((j + c) - 1, n) + 1
-            #if k > n
-            #    k = mod(k, n)
-            #end
+            k = c + j
+            if k > n || k < 0
+                k = mod(k, n - 1)
+            elseif k == 0
+                k = n - 1
+            elseif k == 1
+                k = n
+            end
+            #@show pp, i
             insert!(code, k, popat!(code, j))
             insert!(ix, k, popat!(ix, j))
         end
     end
-    code
+    j = findfirst(x -> x == 0, code)
+    sum(code[mod.(j .+ [1000, 2000, 3000], (n,))])
+    #code
 end
 
-runit("20_testinput.txt")
+#runit("20_input.txt") 
+runit("20_input.txt", part2=true)
