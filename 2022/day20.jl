@@ -8,7 +8,7 @@ function runit(filename; part2=false)
     code = read_input(filename)
     p = 1
     if part2
-        code *= 811589153
+        code .*= 811589153
         p = 10
     end
     n = length(code)
