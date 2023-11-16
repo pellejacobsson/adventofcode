@@ -13,19 +13,12 @@ function runit(filename; part2=false)
     end
     n = length(code)
     ix = collect(1:n)
-    for pp = 1:p
+    for _ = 1:p
         for i = 1:n
             j = findfirst(x -> x == i, ix)
             c = code[j]
             k = c + j
-            if k > n || k < 0
-                k = mod(k, n - 1)
-            elseif k == 0
-                k = n - 1
-            elseif k == 1
-                k = n
-            end
-            #@show pp, i
+            k = mod1(k, n - 1)
             insert!(code, k, popat!(code, j))
             insert!(ix, k, popat!(ix, j))
         end
@@ -35,5 +28,5 @@ function runit(filename; part2=false)
     #code
 end
 
-#runit("20_input.txt") 
+runit("20_input.txt") 
 runit("20_input.txt", part2=true)
