@@ -4,7 +4,7 @@ function read_input(filename)
     end
 end
 
-function runit(filename; part2=false)
+function runit(filename; part2=false) :: Int
     input = read_input(filename)
     if part2
         replace_map = Dict(
@@ -19,14 +19,12 @@ function runit(filename; part2=false)
             "nine" => "9"
         )
         linput = replace.(input, replace_map...)
-        rinput = reverse.(replace.(reverse.(input), Dict(reverse(k) => v for (k, v) in replace_map)...))
-        lcalibration = [[s for s in l if isnumeric(s)] for l in linput]
-        rcalibration = [[s for s in l if isnumeric(s)] for l in rinput]
-        sum(parse.(Int, [x[1] * y[end] for (x, y) in zip(lcalibration, rcalibration)]))
+        rinput = replace.(reverse.(input), Dict(reverse(k) => v for (k, v) in replace_map)...)
+        codes = [x.match[1] * y.match[1] for (x, y) in zip(match.(r"\d", linput), match.(r"\d", rinput))]
     else
-        calibration = [[s for s in l if isnumeric(s)] for l in input]
-        sum(parse.(Int, [x[1] * x[end] for x in calibration]))
+        codes = [x.match[1] * x.match[end] for x in match.(r"\d", input)]
     end
+    sum(parse.(Int, codes))
 end
 
 runit("01_input.txt")
