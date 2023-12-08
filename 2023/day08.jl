@@ -1,4 +1,5 @@
 using Primes
+using Base.Iterators
 
 function read_input(filename)
     moves = ""
@@ -16,7 +17,7 @@ end
 
 function solve(moves, nodes)
     node = "AAA"
-    for (i, move) in enumerate(Iterators.cycle(moves))
+    for (i, move) in enumerate(cycle(moves))
         node = move == 'L' ? nodes[node][1] : nodes[node][2]
         if node == "ZZZ"
             return i
@@ -25,10 +26,10 @@ function solve(moves, nodes)
 end
 
 function solve2(moves, nodes)
-    curr_nodes = [node for (node, _) in nodes if endswith(node, "A")]
+    curr_nodes = [node for node in keys(nodes) if endswith(node, "A")]
     factors = Dict{Int, Int}()
     for node in curr_nodes
-        for (i, move) in enumerate(Iterators.cycle(moves))
+        for (i, move) in enumerate(cycle(moves))
             node = move == 'L' ? nodes[node][1] : nodes[node][2]
             if endswith(node, "Z")
                 factors = mergewith(max, factors, factor(Dict, i))
