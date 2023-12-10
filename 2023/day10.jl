@@ -42,8 +42,7 @@ end
 
 # https://www.mdpi.com/2073-8994/10/10/477
 function in_polygon((xp, yp), p)
-    i, k, f = 0, 0, 0
-    u1, v1, u2, v2 = 0, 0, 0, 0
+    k = 0
     n_poly = length(p)
     for i = 1:n_poly - 1
         v1 = p[i][2] - yp
