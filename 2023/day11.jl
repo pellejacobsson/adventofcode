@@ -18,8 +18,8 @@ function calc_dist(g1, g2, row0, col0, part)
 end
 
 function solve(image, part)
-    row0 = [ij[1] for ij in findall(==(0), sum(image, dims=2))]
-    col0 = [ij[2] for ij in findall(==(0), sum(image, dims=1))]
+    row0 = findall(==(0), vec(sum(image, dims=2)))
+    col0 = findall(==(0), vec(sum(image, dims=1)))
     galaxies = findall(==(1), image)
     g_dist = Dict{Tuple{CartesianIndex{2}, CartesianIndex{2}}, Int64}()
     for g1 in galaxies, g2 in galaxies
