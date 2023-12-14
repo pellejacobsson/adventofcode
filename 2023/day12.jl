@@ -1,21 +1,15 @@
 using IterTools
 
-function read_input(filename, part2=false)
+function read_input(filename)
     records = []
     groups = []
     rec_map = Dict('.' => 0, '#' => 1, '?' => 2)
     open(filename) do f
         for line in readlines(f)
             r, g = split(line)
-            if part2
-                r = join(repeat(r, 5), "?")
-            end
             push!(records, [rec_map[s] for s in r])
             push!(groups, parse.(Int, split(g, ",")))
         end
-    end
-    if part2
-        groups = [repeat(g, 5) for g in groups]
     end
     records, groups
 end
@@ -53,8 +47,23 @@ function solve(records, groups)
     n
 end
 
+function n_rec(rec, l)
+    sum(rec .== '#') > l && return 0
+    sum(in.(rec, (['#', '?'],))) < l && return 0
+    any(1 .< findall(==('.'), rec) .< length(rec)) && return 0
+    ix = findall(==('?'), rec)
+    ix1 = findall(==('#'), rec)
+    nix = length(ix)
+    perms = [digits(n, base=2, pad=nix) for n = 0:2^nix - 1]
+    perms = [perm for perm in perms if sum(perm) + sum(rec[ix1])== sum(group)]
+        
+
+function n_ways(rec, g)
+    if length(g) == 1
+
+
 function runit(filename; part2=false)
-    records, groups = read_input(filename, part2)
+    records, groups = read_input(filename)
     solve(records, groups)
 end
 
