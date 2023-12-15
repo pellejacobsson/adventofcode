@@ -14,6 +14,19 @@ function read_input(filename)
     records, groups
 end
 
+function read_input2(filename)
+    records = []
+    groups = []
+    open(filename) do f
+        for line in readlines(f)
+            r, g = split(line)
+            push!(records, r)
+            push!(groups, parse.(Int, split(g, ",")))
+        end
+    end
+    records, groups
+end
+
 function get_record_perms(record, group)
     ix = findall(x -> x == 2, record)
     ix1 = findall(x -> x == 1, record)
@@ -48,44 +61,54 @@ function solve(records, groups)
 end
 
 function dot(record, groups)
-    n_ways(record[2:end], groups)
+    count_record_perm2(record[2:end], groups)
 end
 
 function pound(record, groups)
-    g = groups[1]
-    r_curr = replace(record[1:g], "?" => "#")
-    r_curr == "#"^g || return 0
-    if length(record) == g
+    next_group = groups[1]
+    this_group = replace(record[1:min(next_group, length(record))], "?" => "#")
+    this_group == "#"^next_group || return 0
+    if length(record) == next_group
         return length(groups) == 1 ? 1 : 0
     end
-    if record[g + 1] in ["?."]
-        return n_ways(record[g + 2:end], groups[2:end])
+    if record[next_group + 1] in "?."
+        return count_record_perm2(record[next_group + 2:end], groups[2:end])
     end
     return 0
 end
 
-function n_ways(record, groups)
-
+function count_record_perm2(record, groups)
     if length(groups) == 0
         return !('#' in record) ? 1 : 0
     end
     length(record) == 0 && return 0
-    c = record[1]
+
+    next_char = record[1]
     
-    if c == '#'
+    if next_char == '#'
         res = pound(record, groups)
-    elseif c == '.'
+    elseif next_char == '.'
         res = dot(record, groups)
-    elseif c == '?'
+    elseif next_char == '?'
         res = dot(record, groups) + pound(record, groups)
     end
     res
 end
-        
+
+function solve2(records, groups)
+    n = 0
+    for (record, group) in zip(records, groups)
+        n += count_record_perm2(record, group)
+    end
+    n
+end
 
 function runit(filename; part2=false)
     records, groups = read_input(filename)
     solve(records, groups)
 end
 
-runit("12_input.txt")
+#runit("12_input.txt")
+
+records, groups = read_input2("12_testinput.txt")
+solve2(records, groups)
