@@ -47,20 +47,41 @@ function solve(records, groups)
     n
 end
 
-function n_rec(rec, l)
-    sum(rec .== '#') > l && return 0
-    sum(in.(rec, (['#', '?'],))) < l && return 0
-    any(1 .< findall(==('.'), rec) .< length(rec)) && return 0
-    ix = findall(==('?'), rec)
-    ix1 = findall(==('#'), rec)
-    nix = length(ix)
-    perms = [digits(n, base=2, pad=nix) for n = 0:2^nix - 1]
-    perms = [perm for perm in perms if sum(perm) + sum(rec[ix1])== sum(group)]
+function dot(record, groups)
+    n_ways(record[2:end], groups)
+end
+
+function pound(record, groups)
+    g = groups[1]
+    r_curr = replace(record[1:g], "?" => "#")
+    r_curr == "#"^g || return 0
+    if length(record) == g
+        return length(groups) == 1 ? 1 : 0
+    end
+    if record[g + 1] in ["?."]
+        return n_ways(record[g + 2:end], groups[2:end])
+    end
+    return 0
+end
+
+function n_ways(record, groups)
+
+    if length(groups) == 0
+        return !('#' in record) ? 1 : 0
+    end
+    length(record) == 0 && return 0
+    c = record[1]
+    
+    if c == '#'
+        res = pound(record, groups)
+    elseif c == '.'
+        res = dot(record, groups)
+    elseif c == '?'
+        res = dot(record, groups) + pound(record, groups)
+    end
+    res
+end
         
-
-function n_ways(rec, g)
-    if length(g) == 1
-
 
 function runit(filename; part2=false)
     records, groups = read_input(filename)
