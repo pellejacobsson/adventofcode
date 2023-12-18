@@ -21,7 +21,7 @@ function read_input2(filename)
         for line in readlines(f)
             r, g = split(line)
             push!(records, r)
-            push!(groups, parse.(Int, split(g, ",")))
+            push!(groups, Tuple(parse.(Int, split(g, ","))))
         end
     end
     records, groups
@@ -60,55 +60,48 @@ function solve(records, groups)
     n
 end
 
-function dot(record, groups)
-    count_record_perm2(record[2:end], groups)
-end
+function count(record, groups, mem)
+    if record == ""
+        return isempty(groups) ? 1 : 0
+    end
+    if isempty(groups)
+        return '#' in record ? 0 : 1
+    end
 
-function pound(record, groups)
-    next_group = groups[1]
-    this_group = replace(record[1:min(next_group, length(record))], "?" => "#")
-    this_group == "#"^next_group || return 0
-    if length(record) == next_group
-        return length(groups) == 1 ? 1 : 0
+    if (record, groups) in keys(mem)
+        return mem[(record, groups)]
     end
-    if record[next_group + 1] in "?."
-        return count_record_perm2(record[next_group + 2:end], groups[2:end])
-    end
-    return 0
-end
 
-function count_record_perm2(record, groups)
-    if length(groups) == 0
-        return !('#' in record) ? 1 : 0
+    res = 0
+    if record[1] in ".?"
+        res += count(record[2:end], groups, mem)
     end
-    length(record) == 0 && return 0
-
-    next_char = record[1]
-    
-    if next_char == '#'
-        res = pound(record, groups)
-    elseif next_char == '.'
-        res = dot(record, groups)
-    elseif next_char == '?'
-        res = dot(record, groups) + pound(record, groups)
+    if record[1] in "#?"
+        if groups[1] <= length(record) && !('.' in record[1:groups[1]]) && (groups[1] == length(record) || record[groups[1] + 1] != '#')
+            res += count(record[groups[1] + 2:end], groups[2:end], mem)
+        end
     end
+    mem[(record, groups)] = res
     res
 end
 
 function solve2(records, groups)
     n = 0
+    mem = Dict()
     for (record, group) in zip(records, groups)
-        n += count_record_perm2(record, group)
+        n += count(record, group, mem)
     end
     n
 end
 
 function runit(filename; part2=false)
-    records, groups = read_input(filename)
-    solve(records, groups)
+    records, groups = read_input2(filename)
+    if part2
+        records = [join(repeat([r], 5), "?") for r in records]
+        groups = [Tuple(repeat([g...], 5)) for g in groups]
+    end
+    solve2(records, groups)
 end
 
-#runit("12_input.txt")
-
-records, groups = read_input2("12_testinput.txt")
-solve2(records, groups)
+runit("12_input.txt")
+runit("12_input.txt", part2=true)
