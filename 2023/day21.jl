@@ -44,7 +44,7 @@ function runit(filename, n_steps)
     solve(garden, n_steps, start)
 end
 
-# Needed some hints to see the 65 + n * 131. Could not have done this on my own.
+# Needed some hints to see the 65 + n * 131.
 function runit2(filename)
     garden, start = read_input(filename)
     alpha = solve(garden, 65, start)
