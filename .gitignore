@@ -1,4 +1,5 @@
 .venv/
 .vscode/
+leaderboard/
 .DS_Store
 *.txt
