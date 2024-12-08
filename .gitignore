@@ -1,5 +1,6 @@
 .venv/
 .vscode/
 leaderboard/
+sandbox/
 .DS_Store
 *.txt
