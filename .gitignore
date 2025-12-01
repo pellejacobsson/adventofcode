@@ -4,3 +4,7 @@ leaderboard/
 sandbox/
 .DS_Store
 *.txt
+/input
+pyproject.toml
+uv.lock
+__marimo__
