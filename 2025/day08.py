@@ -38,7 +38,7 @@ def _(sqrt):
 
 @app.cell
 def _(calc_dist):
-    boxes = read_input("input/08_testinput.txt")
+    boxes = read_input("input/08_input.txt")
     dist = calc_dist(boxes)
     return boxes, dist
 
@@ -64,32 +64,27 @@ def _(dist, part1):
 
 @app.cell
 def _(boxes, nx):
-    def part2(dist):
+    def part2(dist, n_boxes):
         pairs = [(i, j) for (i, j), d in sorted(dist.items(), key=lambda x: x[1])]
         G = nx.Graph()
-        first = True
+        go = False
         for pair in pairs:
             G.add_edges_from([pair])
-            print(G)
             circuit = list(nx.connected_components(G))
-            if not first and len(circuit) == 1:
+            circuit_len = len(circuit)
+            if go and circuit_len == 1 and circuit[0] == set(range(n_boxes)):
                 break
-            first = False
-        res = boxes[pair[0]][0] * boxes[pair[0]][0]
+            if not go and circuit_len > 1:
+                go = True
+        res = boxes[pair[0]][0] * boxes[pair[1]][0]
 
         return res
-    
     return (part2,)
 
 
 @app.cell
-def _(dist, part2):
-    part2(dist)
-    return
-
-
-@app.cell
-def _():
+def _(boxes, dist, part2):
+    part2(dist, len(boxes))
     return
 
 
