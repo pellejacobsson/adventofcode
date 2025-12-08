@@ -58,31 +58,26 @@ def _():
     return
 
 
+@app.function
+def n_paths(grid, i_max, pos, cache):
+    if pos in cache:
+        return cache[pos]
+    for i in range(1, i_max - int(pos.real) + 1):
+        if grid[pos + i] == "^":
+            l_pos = pos + i - 1j
+            r_pos = pos + i + 1j
+            res = n_paths(grid, i_max, l_pos, cache) + n_paths(grid, i_max, r_pos, cache)
+            cache[pos] = res
+            return res
+    return 1
+
+
 @app.cell
 def _():
-    grid, start = read_input("input/07_testinput.txt")
-    return grid, start
-
-
-@app.cell
-def _(grid, start):
+    grid, start = read_input("input/07_input.txt")
     i_max = int(max(z.real for z in grid))
-    i0 = int(start.real)
-    j0 = (start.imag - 1) * 1j
-    for i in range(i0, i_max + 1):
-        if grid[i0 + j0 + i] == "^":
-            print(i0 + j0 + i)
-    return
-
-
-@app.cell
-def _(grid):
-    grid[12 + 6j]
-    return
-
-
-@app.cell
-def _():
+    cache = {}
+    n_paths(grid, i_max, start, cache)
     return
 
 
